@@ -79,8 +79,8 @@
                                 <td><c:out value="${part.partNumber}"/></td>
                                 <td><c:out value="${part.vendor}"/></td>
                                 <td><c:out value="${part.qty}"/></td>
-                                <td><c:out value="${part.shipped.toString('MMM dd, yyyy')}"/></td>
-                                <td><c:out value="${part.recieve.toString('MMM dd, yyyy')}"/></td>
+                                <td><c:out value="${part.shippedStr}"/></td>
+                                <td><c:out value="${part.recieveStr}"/></td>
                             </tr>
                         </c:forEach>
                     </table>
@@ -97,10 +97,12 @@
 <script src="<c:url value="/res/js/bootstrap/bootstrap.min.js" />"></script>
 <script src="<c:url value="/res/js/datatables/datatables.min.js" />"></script>
 <script src="<c:url value="/res/js/datatables/datatables.bootstrap.min.js" />"></script>
+<script src="<c:url value="/res/js/moment/datetime-moment.js" /> "></script>
 <script src="<c:url value="/res/js/bootstrap/bootstrap-datetimepicker.min.js" />"></script>
 
 <script type="text/javascript">
     $(function(){
+        $.fn.dataTable.moment('MMM DD, YYYY');
         $("#partstable").DataTable();
         
         $("#shAfter").datetimepicker({

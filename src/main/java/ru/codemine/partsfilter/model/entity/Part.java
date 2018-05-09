@@ -3,7 +3,10 @@ package ru.codemine.partsfilter.model.entity;
 import org.joda.time.LocalDate;
 
 import java.io.Serializable;
+import java.util.Locale;
 import java.util.Objects;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 public class Part implements Serializable
 {
@@ -72,6 +75,18 @@ public class Part implements Serializable
     public void setRecieve(LocalDate recieve)
     {
         this.recieve = recieve;
+    }
+    
+    public String getShippedStr()
+    {
+        DateTimeFormatter formatter = DateTimeFormat.forPattern("MMM dd, yyyy").withLocale(Locale.US);
+        return formatter.print(shipped);
+    }
+    
+    public String getRecieveStr()
+    {
+        DateTimeFormatter formatter = DateTimeFormat.forPattern("MMM dd, yyyy").withLocale(Locale.US);
+        return formatter.print(recieve);
     }
 
     @Override
