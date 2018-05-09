@@ -32,8 +32,7 @@ public class DefaultRouter extends HttpServlet
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
     {
-        Map<String, String[]> parameters = req.getParameterMap();
-        
+
         //I cant use spring / hibernate validators, so i'll perform simple manual validation
         DateTimeFormatter formatter = DateTimeFormat.forPattern("MMM dd, yyyy").withLocale(Locale.US);
         
@@ -42,58 +41,39 @@ public class DefaultRouter extends HttpServlet
         LocalDate shAfter = null;
         LocalDate reBefore = null;
         LocalDate reAfter = null;
+        String partName = "";
+        String partNumber = "";
+        String vendor = "";
         
-        try
+        //I do not need to know which field is violated - so one error for all violations
+        for(Map.Entry entry : req.getParameterMap().entrySet())
         {
-            qty = Integer.parseInt(parameters.get("qty")[0]);
-        } 
-        catch (NumberFormatException e)
-        {
-            LOG.info("User posted wrong or empty quantity");
-        }
-        
-        try
-        {
-            shBefore = LocalDate.parse(parameters.get("shBefore")[0], formatter);
-        }
-        catch (IllegalArgumentException e)
-        {
-            LOG.info("User posted wrong or empty shipped before date");
-        }
-        
-        try
-        {
-            shAfter = LocalDate.parse(parameters.get("shAfter")[0], formatter);
-        }
-        catch (IllegalArgumentException e)
-        {
-            LOG.info("User posted wrong or empty shipped after date");
-        }
-        
-        try
-        {
-            reBefore = LocalDate.parse(parameters.get("reBefore")[0], formatter);
-        }
-        catch (IllegalArgumentException e)
-        {
-            LOG.info("User posted wrong or empty recieved before date");
+            String key = (String)entry.getKey();
+            String val = ((String[])entry.getValue())[0];
+            try
+            {
+                if("qty".equals(key)) qty = Integer.parseInt(val);
+                if("shBefore".equals(key)) shBefore = LocalDate.parse(val, formatter);
+                if("shAfter".equals(key)) shAfter = LocalDate.parse(val, formatter);
+                if("reBefore".equals(key)) reBefore = LocalDate.parse(val, formatter);
+                if("reAfter".equals(key))  reAfter = LocalDate.parse(val, formatter);
+                if("partname".equals(key)) partName = val;
+                if("partnumber".equals(key)) partNumber = val;
+                if("vendor".equals(key)) vendor = val;
+            } 
+            catch (Exception e)
+            {
+                LOG.debug("User posted wrong or empty data: " + e.getLocalizedMessage());
+            }
+            
         }
         
-        try
-        {
-            reAfter = LocalDate.parse(parameters.get("reAfter")[0], formatter);
-        }
-        catch (IllegalArgumentException e)
-        {
-            LOG.info("User posted wrong or empty recieved after date");
-        }
-
         
         //I'll use DTO to transfer data
         PartDTO partDto = new PartDTO();
-        partDto.setPartName(parameters.get("partname")[0]);
-        partDto.setPartNumber(parameters.get("partnumber")[0]);
-        partDto.setVendor(parameters.get("vendor")[0]);
+        partDto.setPartName(partName);
+        partDto.setPartNumber(partNumber);
+        partDto.setVendor(vendor);
         partDto.setQty(qty);
         partDto.setShippedBefore(shBefore);
         partDto.setShippedAfter(shAfter);
