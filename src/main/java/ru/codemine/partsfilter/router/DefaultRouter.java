@@ -36,14 +36,7 @@ public class DefaultRouter extends HttpServlet
         //I cant use spring / hibernate validators, so i'll perform simple manual validation
         DateTimeFormatter formatter = DateTimeFormat.forPattern("MMM dd, yyyy").withLocale(Locale.US);
         
-        int qty = 0;
-        LocalDate shBefore = null;
-        LocalDate shAfter = null;
-        LocalDate reBefore = null;
-        LocalDate reAfter = null;
-        String partName = "";
-        String partNumber = "";
-        String vendor = "";
+        PartDTO partDto = new PartDTO();
         
         //I do not need to know which field is violated - so one error for all violations
         for(Map.Entry entry : req.getParameterMap().entrySet())
@@ -52,14 +45,14 @@ public class DefaultRouter extends HttpServlet
             String val = ((String[])entry.getValue())[0];
             try
             {
-                if("qty".equals(key)) qty = Integer.parseInt(val);
-                if("shBefore".equals(key)) shBefore = LocalDate.parse(val, formatter);
-                if("shAfter".equals(key)) shAfter = LocalDate.parse(val, formatter);
-                if("reBefore".equals(key)) reBefore = LocalDate.parse(val, formatter);
-                if("reAfter".equals(key))  reAfter = LocalDate.parse(val, formatter);
-                if("partname".equals(key)) partName = val;
-                if("partnumber".equals(key)) partNumber = val;
-                if("vendor".equals(key)) vendor = val;
+                if("qty".equals(key))        partDto.setQty(Integer.parseInt(val));
+                if("shBefore".equals(key))   partDto.setShippedBefore(LocalDate.parse(val, formatter));
+                if("shAfter".equals(key))    partDto.setShippedAfter(LocalDate.parse(val, formatter));
+                if("reBefore".equals(key))   partDto.setRecieveBefore(LocalDate.parse(val, formatter));
+                if("reAfter".equals(key))    partDto.setRecieveAfter(LocalDate.parse(val, formatter));
+                if("partname".equals(key))   partDto.setPartName(val);
+                if("partnumber".equals(key)) partDto.setPartNumber(val);
+                if("vendor".equals(key))     partDto.setVendor(val);
             } 
             catch (Exception e)
             {
@@ -67,19 +60,7 @@ public class DefaultRouter extends HttpServlet
             }
             
         }
-        
-        
-        //I'll use DTO to transfer data
-        PartDTO partDto = new PartDTO();
-        partDto.setPartName(partName);
-        partDto.setPartNumber(partNumber);
-        partDto.setVendor(vendor);
-        partDto.setQty(qty);
-        partDto.setShippedBefore(shBefore);
-        partDto.setShippedAfter(shAfter);
-        partDto.setRecieveBefore(reBefore);
-        partDto.setRecieveAfter(reAfter);
-        
+
         List<Part> parts = PartDao.getInstance().getFiltered(partDto);
         req.setAttribute("partsList", parts);
 
